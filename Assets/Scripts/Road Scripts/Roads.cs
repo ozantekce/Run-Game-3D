@@ -12,6 +12,8 @@ public class Roads : MonoBehaviour
     private int firstIndex;
     private int lastIndex;
 
+    public static Roads Instance { get => instance; set => instance = value; }
+
     private void Awake()
     {
 

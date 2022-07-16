@@ -5,8 +5,31 @@ using DG.Tweening;
 
 public class Player : MonoBehaviour
 {
+    private static Player instance;
+    private void Awake()
+    {
+
+        MakeSingleton();
+
+    }
+    private void MakeSingleton()
+    {
+        if (instance != null)
+        {
+            Destroy(gameObject);
+        }
+        else
+        {
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+    }
+
 
     private float leftX=-2, midX=0, rightX=2;
+
+    private float left_rightTime = 0.2f;
+    private float forwardSpeed = 10f;
 
 
     private Road currentRoad = Road.mid;
@@ -15,21 +38,25 @@ public class Player : MonoBehaviour
 
 
     private bool ready = true;
+
+    public static Player Instance { get => instance; set => instance = value; }
+
     private void Update()
     {
 
+        MoveZ();
         if (Input.GetMouseButtonDown(0))
         {
             //run = false;
             float t = Touch.TouchDistanceToTransform(transform);
             Debug.Log(t);
-            if(t > 5)
+            if(t > 0.5f)
             {
-                Move(Direction.right);
+                MoveX(Direction.right);
             }
-            else if (t < -5)
+            else if (t < -0.5f)
             {
-                Move(Direction.left);
+                MoveX(Direction.left);
             }
             else
             {
@@ -37,9 +64,24 @@ public class Player : MonoBehaviour
             }
         }
 
+        if(TakenRoad() >= 4f)
+        {
+            Roads.Instance.PushForward();
+            lastZ = transform.position.z;
+        }
+
     }
 
-    private void Move(Direction direction)
+
+
+    private void MoveZ()
+    {
+        transform.Translate(new Vector3(0,0,forwardSpeed*Time.deltaTime));
+
+    }
+
+
+    private void MoveX(Direction direction)
     {
         if (!ready)
             return;
@@ -53,7 +95,7 @@ public class Player : MonoBehaviour
             }
             else if(direction == Direction.right)
             {
-                Move_(midX,Road.mid);
+                MoveX_Part2(midX,Road.mid);
             }
 
         }
@@ -61,11 +103,11 @@ public class Player : MonoBehaviour
         {
             if (direction == Direction.left)
             {
-                Move_(leftX,Road.left);
+                MoveX_Part2(leftX,Road.left);
             }
             else if (direction == Direction.right)
             {
-                Move_(rightX,Road.right);
+                MoveX_Part2(rightX,Road.right);
             }
         }
         else if(currentRoad == Road.right)
@@ -76,17 +118,17 @@ public class Player : MonoBehaviour
             }
             else if (direction == Direction.left)
             {
-                Move_(midX,Road.mid);
+                MoveX_Part2(midX,Road.mid);
             }
         }
         
 
     }
 
-    private void Move_(float x,Road road)
+    private void MoveX_Part2(float x,Road road)
     {
         ready = false;
-        transform.DOMoveX(x, 0.5f).OnComplete(() =>
+        transform.DOMoveX(x, left_rightTime).OnComplete(() =>
         {
             currentRoad = road;
             ready = true;
@@ -94,6 +136,13 @@ public class Player : MonoBehaviour
 
     }
 
+
+    private float lastZ;
+
+    private float TakenRoad()
+    {
+        return transform.position.z - lastZ;
+    }
 
 
 

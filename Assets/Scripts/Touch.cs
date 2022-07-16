@@ -32,12 +32,14 @@ public class Touch : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     public static float TouchDistanceToTransform(Transform transform)
     {
 
-        Vector3 mousePos = Input.mousePosition;
-        mousePos.x -=  Screen.width / 2;
-        return mousePos.x;
-        //Debug.Log(mousePos.x + " " + Screen.width/2);
-        float dis = Mathf.Abs(mousePos.x);
-        return Mathf.Clamp(dis, 0, Screen.width / 2);
+        float distance = Vector3.Distance(transform.position, Camera.main.transform.position);
+        Vector3 v3Pos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, distance);
+        v3Pos = Camera.main.ScreenToWorldPoint(v3Pos);
+
+        v3Pos = v3Pos - transform.position;
+
+        return v3Pos.x;
+
     }
 
 
