@@ -5,6 +5,7 @@ using UnityEngine;
 public class Roads : MonoBehaviour
 {
 
+    private static Roads instance;
 
     private GameObject[] roads;
 
@@ -23,8 +24,26 @@ public class Roads : MonoBehaviour
         firstIndex = 0;
         lastIndex = roads.Length-1;
 
+        MakeSingleton();
+
     }
 
+    private void MakeSingleton()
+    {
+        if (instance != null)
+        {
+            Destroy(gameObject);
+        }
+        else
+        {
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+    }
+
+
+
+    /*
     public bool pushIt;
 
     private void Update()
@@ -34,7 +53,7 @@ public class Roads : MonoBehaviour
             pushIt = false;
             PushForward();
         }
-    }
+    }*/
 
     public void PushForward()
     {
