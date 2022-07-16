@@ -24,6 +24,7 @@ public class Player : MonoBehaviour
             DontDestroyOnLoad(gameObject);
         }
     }
+    
 
 
     private float leftX=-2, midX=0, rightX=2;
@@ -31,7 +32,7 @@ public class Player : MonoBehaviour
     private float left_rightTime = 0.2f;
     private float forwardSpeed = 10f;
 
-
+    [SerializeField]
     private Road currentRoad = Road.mid;
 
     public Direction _direction;
@@ -64,6 +65,11 @@ public class Player : MonoBehaviour
             }
         }
 
+        if (Input.GetAxis("Jump")>0)
+        {
+            Jump();
+        }
+
         if(TakenRoad() >= 4f)
         {
             Roads.Instance.PushForward();
@@ -78,6 +84,19 @@ public class Player : MonoBehaviour
     {
         transform.Translate(new Vector3(0,0,forwardSpeed*Time.deltaTime));
 
+    }
+
+    private bool jumpReady = true;
+    private void Jump()
+    {
+
+        if (!jumpReady)
+            return;
+        jumpReady = false;
+        transform.DOMoveY(3f, 0.5f).SetEase(Ease.OutSine).OnComplete(() =>
+        {
+            transform.DOMoveY(1.33f, 0.5f).SetEase(Ease.InSine).OnComplete(() => { jumpReady = true; });
+        });
     }
 
 
@@ -146,7 +165,24 @@ public class Player : MonoBehaviour
 
 
 
+    private void OnTriggerEnter(Collider other)
+    {
+
+        if (other.CompareTag("Gold"))
+        {
+            Debug.Log("Gold");
+            Destroy(other.gameObject, 0.1f);
+            //score manager;
+        }
+
+    }
+
+
 }
+
+
+
+
 
 public enum Road
 {
