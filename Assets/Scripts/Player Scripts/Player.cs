@@ -50,7 +50,7 @@ public class Player : MonoBehaviour
         {
             //run = false;
             float t = Touch.TouchDistanceToTransform(transform);
-            Debug.Log(t);
+            //Debug.Log(t);
             if(t > 0.5f)
             {
                 MoveX(Direction.right);
@@ -168,10 +168,10 @@ public class Player : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
 
-        if (other.CompareTag("Gold"))
+        if (other.CompareTag("Coin"))
         {
-            Debug.Log("Gold");
-            Destroy(other.gameObject, 0.1f);
+            Debug.Log("Coin");
+            CoinManager.Instance.StackCoin(other.gameObject);
             //score manager;
         }
 
