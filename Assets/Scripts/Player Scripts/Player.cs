@@ -172,7 +172,19 @@ public class Player : MonoBehaviour
         {
             Debug.Log("Coin");
             CoinManager.Instance.StackCoin(other.gameObject);
-            //score manager;
+
+            if (other.name.Equals("Gold"))
+            {
+                ScoreManager.Instance.Score += 3;
+            }
+            else if (other.name.Equals("Silver"))
+            {
+                ScoreManager.Instance.Score += 2;
+            }
+            else
+            {
+                ScoreManager.Instance.Score += 1;
+            }
         }
 
     }
