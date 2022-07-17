@@ -66,6 +66,7 @@ public class CoinManager : MonoBehaviour
     }
 
     private float[] Xposes = { -2, 0, 2 };
+    private float[] Yposes = { 1.3f,1.3f,1.3f,1.3f,3.5f };
 
 
     private float delayGoldCoin = 1, delaySilverCoin=1, delayCopperCoin=1;
@@ -111,9 +112,10 @@ public class CoinManager : MonoBehaviour
         if (coin == null)
             return;
 
-        int r = Random.Range(0, 3);
+        int rX = Random.Range(0, Xposes.Length);
+        int rY = Random.Range(0, Yposes.Length);
 
-        Vector3 pushPos = new Vector3(Xposes[r],1.3f, Player.Instance.transform.position.z+ 50 +Random.Range(0,5f));
+        Vector3 pushPos = new Vector3(Xposes[rX],Yposes[rY], Player.Instance.transform.position.z+ 50 +Random.Range(0,5f));
 
         coin.transform.position = pushPos;
         //Debug.Log("hi2");
