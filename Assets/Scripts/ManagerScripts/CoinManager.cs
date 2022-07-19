@@ -71,6 +71,8 @@ public class CoinManager : MonoBehaviour
 
     private float delayGoldCoin = 1, delaySilverCoin=1, delayCopperCoin=1;
 
+
+    private float farBehindControl = 5;
     public static CoinManager Instance { get => instance; set => instance = value; }
 
     private void Update()
@@ -94,6 +96,30 @@ public class CoinManager : MonoBehaviour
             delayCopperCoin = 1f;
         }
 
+
+        farBehindControl -= Time.deltaTime;
+        if (farBehindControl <= 0)
+        {
+            FarBehind(goldCoins);
+            FarBehind(silverCoins);
+            FarBehind(copperCoins);
+            farBehindControl = 5;
+        }
+
+    }
+
+
+
+    private void FarBehind(GameObject[] coins)
+    {
+        foreach (GameObject t in coins)
+        {
+            if (t.transform.position.z < Player.Instance.transform.position.z
+                && Player.Instance.transform.position.z - t.transform.position.z > 3f)
+            {
+                StackCoin(t);
+            }
+        }
     }
 
 

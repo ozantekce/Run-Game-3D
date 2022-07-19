@@ -6,11 +6,17 @@ using DG.Tweening;
 public class Player : MonoBehaviour
 {
     private static Player instance;
+
+
+    public GameObject MenuScreen,GameScreen;
+
+    private GameObject currentScreen;
+
     private void Awake()
     {
 
         MakeSingleton();
-
+        currentScreen = MenuScreen;
     }
     private void MakeSingleton()
     {
@@ -24,8 +30,14 @@ public class Player : MonoBehaviour
             DontDestroyOnLoad(gameObject);
         }
     }
-    
 
+
+    private Animator animator;
+    private void Start()
+    {
+        animator = GetComponentInChildren<Animator>();
+        animator.speed = 0;
+    }
 
     private float leftX=-2, midX=0, rightX=2;
 
@@ -42,39 +54,58 @@ public class Player : MonoBehaviour
 
     public static Player Instance { get => instance; set => instance = value; }
 
+    private float delay = 1.2f;
+
     private void Update()
     {
 
-        MoveZ();
-        if (Input.GetMouseButtonDown(0))
+        if(currentScreen == MenuScreen)
         {
-            //run = false;
-            float t = Touch.TouchDistanceToTransform(transform);
-            //Debug.Log(t);
-            if(t > 0.5f)
+
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                currentScreen.SetActive(false);
+                currentScreen = GameScreen;
+                currentScreen.SetActive(true);
+                delay = 0.2f;
+                animator.speed = 1;
+            }
+
+        }
+        else if(currentScreen == GameScreen)
+        {
+            delay -= Time.deltaTime;
+            if (delay > 0)
+            {
+                
+                return;
+            }
+                
+
+            MoveZ();
+            if (Input.GetKeyUp(KeyCode.D))
             {
                 MoveX(Direction.right);
             }
-            else if (t < -0.5f)
+            else if (Input.GetKeyUp(KeyCode.A))
             {
                 MoveX(Direction.left);
             }
-            else
+
+            if (Input.GetKeyUp(KeyCode.Space))
             {
-
+                Jump();
             }
+
+            if (TakenRoad() >= 4f)
+            {
+                Roads.Instance.PushForward();
+                lastZ = transform.position.z;
+            }
+
         }
 
-        if (Input.GetAxis("Jump")>0)
-        {
-            Jump();
-        }
 
-        if(TakenRoad() >= 4f)
-        {
-            Roads.Instance.PushForward();
-            lastZ = transform.position.z;
-        }
 
     }
 
@@ -170,7 +201,7 @@ public class Player : MonoBehaviour
 
         if (other.CompareTag("Coin"))
         {
-            Debug.Log("Coin");
+            //Debug.Log("Coin");
             CoinManager.Instance.StackCoin(other.gameObject);
 
             if (other.name.Equals("Gold"))
@@ -187,7 +218,19 @@ public class Player : MonoBehaviour
             }
         }
 
+
+        if (other.CompareTag("Trap"))
+        {
+            currentScreen.SetActive(false);
+            currentScreen = MenuScreen;
+            currentScreen.SetActive(true);
+            animator.speed = 0;
+            //transform.position = new Vector3(0,1.33f,0);
+        }
+
     }
+
+
 
 
 }
